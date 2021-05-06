@@ -7,12 +7,28 @@ kotlin {
   @Suppress("ClassName")
   data class iOSTarget(val name: String, val preset: String, val id: String)
 
+  @Suppress("ClassName")
+  data class tvOSTarget(val name: String, val preset: String, val id: String)
+
   val iosTargets = listOf(
       iOSTarget("ios", "iosArm64", "ios-arm64"),
       iOSTarget("iosSim", "iosX64", "ios-x64")
   )
 
+  val tvosTargets = listOf(
+      tvOSTarget("tvos", "tvosArm64", "tvos-arm64"),
+      tvOSTarget("tvosSim", "tvosX64", "tvos-x64")
+  )
+
   for ((targetName, presetName, id) in iosTargets) {
+    targetFromPreset(presets.getByName(presetName), targetName) {
+      mavenPublication {
+        artifactId = "${project.name}-$id"
+      }
+    }
+  }
+
+  for ((targetName, presetName, id) in tvosTargets) {
     targetFromPreset(presets.getByName(presetName), targetName) {
       mavenPublication {
         artifactId = "${project.name}-$id"
@@ -50,6 +66,14 @@ kotlin {
     val iosSimMain by getting {
       dependsOn(iosMain)
     }
+
+    val tvosMain by getting{
+      dependsOn(iosMain)
+    }
+    val tvosSimMain by getting{
+      dependsOn(iosMain)
+    }
+
 
     val jsMain by getting {
       dependsOn(commonMain)

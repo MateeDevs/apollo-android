@@ -63,6 +63,7 @@ subprojects {
   repositories {
     google()
     mavenCentral()
+    mavenLocal()
     jcenter {
       content {
         includeGroup("org.jetbrains.trove4j")
