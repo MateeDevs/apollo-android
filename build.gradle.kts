@@ -42,7 +42,7 @@ subprojects {
     }
   }
   (project.extensions.findByName("kotlin")
-   as? org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension)?.run {
+      as? org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension)?.run {
     sourceSets.all {
       languageSettings.apply {
         apiVersion = "1.3"
@@ -63,10 +63,17 @@ subprojects {
   repositories {
     google()
     mavenCentral()
-    mavenLocal()
     jcenter {
       content {
         includeGroup("org.jetbrains.trove4j")
+      }
+    }
+    maven {
+      name = "GitHubPackages"
+      url = uri("https://maven.pkg.github.com/MateeDevs/core-and-lib")
+      credentials {
+        username = project.property("githubUser") as String
+        password = project.property("githubPAT") as String
       }
     }
   }
@@ -153,13 +160,13 @@ fun Project.configurePublishing() {
   }
 
   tasks.withType(Jar::class.java) {
-      manifest {
-        attributes["Built-By"] = findProperty("POM_DEVELOPER_ID") as String?
-        attributes["Build-Jdk"] = "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${System.getProperty("java.vm.version")})"
-        attributes["Created-By"] = "Gradle ${gradle.gradleVersion}"
-        attributes["Implementation-Title"] = findProperty("POM_NAME") as String?
-        attributes["Implementation-Version"] = findProperty("VERSION_NAME") as String?
-      }
+    manifest {
+      attributes["Built-By"] = findProperty("POM_DEVELOPER_ID") as String?
+      attributes["Build-Jdk"] = "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${System.getProperty("java.vm.version")})"
+      attributes["Created-By"] = "Gradle ${gradle.gradleVersion}"
+      attributes["Implementation-Title"] = findProperty("POM_NAME") as String?
+      attributes["Implementation-Version"] = findProperty("VERSION_NAME") as String?
+    }
   }
 
   configure<PublishingExtension> {
@@ -214,21 +221,30 @@ fun Project.configurePublishing() {
         url = uri("file://${rootProject.buildDir}/localMaven")
       }
 
-      maven {
-        name = "ossSnapshots"
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-        credentials {
-          username = System.getenv("SONATYPE_NEXUS_USERNAME")
-          password = System.getenv("SONATYPE_NEXUS_PASSWORD")
-        }
-      }
+//      maven {
+//        name = "ossSnapshots"
+//        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+//        credentials {
+//          username = System.getenv("SONATYPE_NEXUS_USERNAME")
+//          password = System.getenv("SONATYPE_NEXUS_PASSWORD")
+//        }
+//      }
+//
+//      maven {
+//        name = "ossStaging"
+//        url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+//        credentials {
+//          username = System.getenv("SONATYPE_NEXUS_USERNAME")
+//          password = System.getenv("SONATYPE_NEXUS_PASSWORD")
+//        }
+//      }
 
       maven {
-        name = "ossStaging"
-        url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/MateeDevs/core-and-lib")
         credentials {
-          username = System.getenv("SONATYPE_NEXUS_USERNAME")
-          password = System.getenv("SONATYPE_NEXUS_PASSWORD")
+          username = project.findProperty("githubUser") as String
+          password = project.findProperty("githubPAT") as String
         }
       }
     }
